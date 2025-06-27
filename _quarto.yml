@@ -5,12 +5,17 @@ book:
   title: "Matching and Weighting for Causal Inference: A Primer and Tutorial"
   author: "Noah Greifer"
   date: "last-modified"
+  repo-url: https://github.com/IQSS/dss-ps/
+  repo-actions: [issue]
   page-navigation: true
   favicon: images/favicon.png
   search: true
   chapters:
     - index.qmd
+
+    - intro.qmd
     - planning.qmd
+
     - part: "Running the Analysis"
       chapters:
         - running.qmd

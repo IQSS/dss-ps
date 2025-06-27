@@ -39,7 +39,7 @@ Our treatment variable is `RHC` (1 for receipt, 0 for non-receipt), our outcome 
 
 Let's examine balance on the variables between the treatment groups using `cobalt`, which provides the function `bal.tab()` for creating a balance table containing balance statistics for each variables.
 
-```{r}
+```{r, message=F}
 library("cobalt")
 ```
 
