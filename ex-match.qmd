@@ -7,7 +7,7 @@ library("cobalt")
 
 To perform matching, we'll use the `MatchIt` package, which provides an interface to many forms of matching and allows for specification of many different options to customize the matching. The `MatchIt` [documentation](https://kosukeimai.github.io/MatchIt/index.html) includes extensive examples and vignettes that should be used to supplement the example here. Much of the information here is simply lifted from this documentation.
 
-```{r}
+```{r, message=F}
 library("MatchIt")
 ```
 
@@ -36,7 +36,7 @@ m2 <- matchit(RHC ~ aps1 + meanbp1 + pafi1 + crea1 + hema1 +
               link = "linear.logit", caliper = .2)
 m2
 
-bal.tab(m1, stats = c("m", "ks"), binary = "std")
+bal.tab(m2, stats = c("m", "ks"), binary = "std")
 ```
 
 We can see that several treated units were discarded, which changes the estimand, though we do see major improvements in balance. There are many methods we can try to improve balance while retaining the estimand, but we'll use generalized full matching [@savjeGeneralizedFullMatching2021] by setting `method = "quick"`, which is fast and tends to perform well in a variety of settings[^ex-match-1].
@@ -53,9 +53,9 @@ m3
 bal.tab(m3, stats = c("m", "ks"), binary = "std")
 ```
 
-Balance is good and we retained the target estimand, but generalized full matching took a toll on the effective sample size (ESS) of our control group, which is now around 1000 (from around 3500). Even though generalized full matching retains the entire sample (i.e., not a single unit is dropped), the matching weights resulting from it have variability such that the ESS is much lower than the original sample size. There are ways to manage the balance-ESS trade-off that are specific to each matching method.
+Balance is good and we retained the target estimand, but generalized full matching quite dramatically reduced the effective sample size (ESS) of our control group, which is now around 1000 (from around 3500). Even though generalized full matching retains the entire sample (i.e., not a single unit is dropped), the matching weights resulting from it have variability such that the ESS is much lower than the original sample size. There are ways to manage the balance-ESS trade-off that are specific to each matching method.
 
-Although balance isn't perfect and could be improved with additional fine-tuning, we'll move forward with this matched sample to demonstrate effect estimation and reporting. First, we need to extract the matched sample from the `matchit` object using `match.data()`. This adds columns to the original dataset called `"distance"`, `"weights"`, and `"subclass"` containing the propensity score, matching weights, and matched strata (i.e., pair membership). When units are dropped in the matching (e.g., when using 1:1 matching), the output will only contain the units remaining in the matched sample[^ex-match-2].
+Although balance isn't perfect and could be improved with additional fine-tuning, we'll move forward with this matched sample to demonstrate effect estimation and reporting. First, we need to extract the matched sample from the `matchit` object using `match.data()`. This adds columns to the original dataset called `"distance"`, `"weights"`, and `"subclass"` containing the propensity score, matching weights, and matched strata (i.e., pair membership), respectively. When units are dropped as a result of the matching (e.g., when using 1:1 matching), the output will only contain the units remaining in the matched sample[^ex-match-2].
 
 [^ex-match-2]: Note that this behavior, and the names of the new columns created, can be customized by the user.
 
@@ -79,7 +79,7 @@ fit <- glm(death ~ RHC * (aps1 + meanbp1 + pafi1 + crea1 + hema1 +
 
 There is no value in examining this outcome model; the coefficients are uninterpretable and provide no information about the effects of the included predictors on the outcome [@westreichTableFallacyPresenting2013]. This model can be arbitrarily complicated and is not designed to be a useful predictive model for the outcome. Its sole purpose is to increase the precision of the resulting effect estimate. We will compute the marginal risks under treatment for each group and compute the risk ratio using g-computation. Here we specify arguments to `avg_predictions()` to use cluster-robust SEs that account for the matching and restrict the data to the treated units because we are estimating the ATT.
 
-```{r}
+```{r, eval=F}
 library("marginaleffects")
 
 avg_predictions(fit,
@@ -87,10 +87,17 @@ avg_predictions(fit,
                 vcov = ~subclass,
                 newdata = subset(RHC == 1))
 ```
+```{r, include = F}
+library("marginaleffects")
 
-We find marginal risks of .69 and .713 for the treated units under control and treatment, respectively. We can compute the risk ratio using the following:
+(p <- avg_predictions(fit,
+                variables = "RHC",
+                vcov = ~subclass,
+                newdata = subset(RHC == 1)))
+```
+We find marginal risks of `r round(p$estimate[1], 3)` and `r round(p$estimate[2], 3)` for the treated units under control and treatment, respectively. We can compute the risk ratio using the following:
 
-```{r}
+```{r, eval = F}
 avg_comparisons(fit,
                 variables = "RHC",
                 vcov = ~subclass,
@@ -98,8 +105,15 @@ avg_comparisons(fit,
                 comparison = "lnratioavg",
                 transform = "exp")
 ```
-
-From this we find a risk ratio of 1.04, indicating that the risk of death is 4% higher for those receiving RHC than had they not received it. The confidence interval for the risk ratio is (.989, 1.09), and the p-value for the test that the log risk ratio is equal to 0 (i.e., that the risk ratio is equal to 1) is .138, indicating no evidence for an effect of RHC in either direction.
+```{r, echo = FALSE}
+(e <- avg_comparisons(fit,
+                variables = "RHC",
+                vcov = ~subclass,
+                newdata = subset(RHC == 1),
+                comparison = "lnratioavg",
+                transform = "exp"))
+```
+From this we find a risk ratio of `r round(e$estimate[1], 2)`, indicating that the risk of death is `r 100 * (round(e$estimate[1], 2) - 1)`% higher for those receiving RHC than had they not received it. The confidence interval for the risk ratio is (`r round(e$conf.low[1], 2)`, `r round(e$conf.high[1], 2)`), and the p-value for the test that the log risk ratio is equal to 0 (i.e., that the risk ratio is equal to 1) is `r round(e$p.value[1], 3)`, indicating no evidence of an effect of RHC in either direction.
 
 To report balance, we could include the final balance table above, a visual representation of it, or a summary of balance statistics (or combinations thereof). A clean visual representation of balance is in a Love plot, which can be requested as follows:
 
