@@ -9,3 +9,9 @@
 _book
 
 **/*.quarto_ipynb
+
+# Working notes kept on the maintainer's machine, never committed
+AGENTS.md
+CLAUDE.md
+STATUS.md
+TASKS.md
