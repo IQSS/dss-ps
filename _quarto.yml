@@ -1,5 +1,5 @@
 project:
-  type: book
+  type: dss-theme-book
 
 book:
   title: "Matching and Weighting for Causal Inference: A Primer and Tutorial"
@@ -8,7 +8,6 @@ book:
   repo-url: https://github.com/IQSS/dss-ps/
   repo-actions: [issue]
   page-navigation: true
-  favicon: images/favicon.png
   search: true
   chapters:
     - index.qmd
@@ -38,12 +37,9 @@ book:
 bibliography: references.bib
 
 format:
-  html:
-    theme:
-      light: cosmo
+  dss-theme-html:
     code-link: true
     author-meta: "Noah Greifer"
-    callout-appearance: simple
 
 execute:
   freeze: auto
