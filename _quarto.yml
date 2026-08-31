@@ -8,6 +8,11 @@ book:
   repo-url: https://github.com/IQSS/dss-ps/
   repo-actions: [issue]
   page-navigation: true
+  # The theme contributes the footer's left half; the licence is this book's own.
+  page-footer:
+    right:
+      - text: "CC BY-SA 4.0"
+        href: https://github.com/IQSS/dss-ps/blob/main/LICENSE
   search: true
   chapters:
     - index.qmd
