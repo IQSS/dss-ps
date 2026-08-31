@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.32">
+<meta name="generator" content="quarto-1.10.18">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -10,10 +10,16 @@
 
 <title>8&nbsp; Estimating the treatment effect – Matching and Weighting for Causal Inference: A Primer and Tutorial</title>
 <style>
-code{white-space: pre-wrap;}
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 span.smallcaps{font-variant: small-caps;}
-div.columns{display: flex; gap: min(4vw, 1.5em);}
-div.column{flex: auto; overflow-x: auto;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
@@ -25,7 +31,6 @@ ul.task-list li input[type="checkbox"] {
 div.csl-bib-body { }
 div.csl-entry {
   clear: both;
-  margin-bottom: 0em;
 }
 .hanging-indent div.csl-entry {
   margin-left:2em;
@@ -45,7 +50,6 @@ div.csl-indent {
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
 <script src="site_libs/clipboard/clipboard.min.js"></script>
 <script src="site_libs/quarto-search/autocomplete.umd.js"></script>
 <script src="site_libs/quarto-search/fuse.min.js"></script>
@@ -53,23 +57,27 @@ div.csl-indent {
 <meta name="quarto:offset" content="./">
 <link href="./sensitivity.html" rel="next">
 <link href="./respecification.html" rel="prev">
-<link href="./images/favicon.png" rel="icon" type="image/png">
+<link href="site_libs/quarto-contrib/quarto-project/IQSS/dss-theme-book/assets/favicon.png" rel="icon" type="image/png">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-48fb113fea7c09ade55c8c495d57f66a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-344bcfd4b59506bf16a64db76aeeab59.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-8153ab361ad1fe9cc7f80a48e4dffba3.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-344bcfd4b59506bf16a64db76aeeab59.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
-  "location": "sidebar",
+  "location": "navbar",
   "copy-button": false,
   "collapse-after": 3,
-  "panel-placement": "start",
-  "type": "textbox",
+  "panel-placement": "end",
+  "type": "overlay",
   "limit": 50,
   "keyboard-shortcut": [
     "f",
@@ -91,14 +99,220 @@ div.csl-indent {
     "search-label": "Search"
   }
 }</script>
+<meta name="theme-color" content="#3C72B4">
 
 
 </head>
 
-<body class="nav-sidebar floating quarto-light">
+<body class="nav-sidebar floating nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const queryPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    const darkModeDefault = queryPrefersDark.matches;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    queryPrefersDark.addEventListener("change", e => {
+      if(window.localStorage.getItem("quarto-color-scheme") !== null)
+        return;
+      const alternate = e.matches
+      toggleColorMode(alternate);
+      localAlternateSentinel = e.matches ? 'alternate' : 'default'; // this is used alongside local storage!
+      toggleGiscusIfUsed(alternate, darkModeDefault);
+    });
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="https://www.iq.harvard.edu/data-science-services" class="navbar-brand navbar-brand-logo">
+    <img src="site_libs/quarto-contrib/quarto-project/IQSS/dss-theme-book/assets/dss-logo.svg" alt="" class="navbar-logo light-content">
+    <img src="site_libs/quarto-contrib/quarto-project/IQSS/dss-theme-book/assets/dss-logo-dark.svg" alt="" class="navbar-logo dark-content">
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="https://iqss.github.io/dss-training/"> 
+<span class="menu-text">Training materials</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://www.iq.harvard.edu/data-science-services"> 
+<span class="menu-text">Data Science Services</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://www.iq.harvard.edu/data-science-services/contact-us"> 
+<span class="menu-text">Request help</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+    <a href="https://github.com/IQSS/dss-ps/" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
   <nav class="quarto-secondary-nav">
     <div class="container-fluid d-flex">
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
@@ -107,29 +321,13 @@ div.csl-indent {
         <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./running.html">Running the Analysis</a></li><li class="breadcrumb-item"><a href="./estimating.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Estimating the treatment effect</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
-      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
-        <i class="bi bi-search"></i>
-      </button>
     </div>
   </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
-    <div class="pt-lg-2 mt-2 text-left sidebar-header">
-    <div class="sidebar-title mb-0 py-0">
-      <a href="./">Matching and Weighting for Causal Inference: A Primer and Tutorial</a> 
-        <div class="sidebar-tools-main">
-    <a href="https://github.com/IQSS/dss-ps/" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
-</div>
-    </div>
-      </div>
-        <div class="mt-2 flex-shrink-0 align-items-center">
-        <div class="sidebar-search">
-        <div id="quarto-search" class="" title="Search"></div>
-        </div>
-        </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
@@ -283,6 +481,7 @@ div.csl-indent {
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
+
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./running.html">Running the Analysis</a></li><li class="breadcrumb-item"><a href="./estimating.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Estimating the treatment effect</span></a></li></ol></nav>
 <div class="quarto-title">
 <h1 class="title"><span id="sec-estimating" class="quarto-section-identifier"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Estimating the treatment effect</span></span></h1>
@@ -308,7 +507,7 @@ div.csl-indent {
 <p>The simplest way to compute the treatment effect after matching or weighting is to compute the weighted mean of the outcome in each treatment group and contrast them to form the estimand of choice. For example, for a binary outcome of death by 6 months after propensity score weighting for the ATE, we can compute the weighted proportion of deaths in the treated group and the weighted proportion of deaths in the control group, which give us the expected potential outcomes under treatment and control for the full sampled population. We can compute the risk ratio by taking the ratio of these weighted proportions. Equally simple would be to run a weighted log-binomial regression of death by 6 months on the treatment and use the exponentiated coefficient on treatment as the estimated risk ratio.</p>
 <section id="adjusting-for-covariates" class="level3" data-number="8.1.1">
 <h3 data-number="8.1.1" class="anchored" data-anchor-id="adjusting-for-covariates"><span class="header-section-number">8.1.1</span> Adjusting for covariates</h3>
-<p>Further adjustment for covariates in the outcome model is a good idea as it improves precision at little to no cost and often reduces bias (though less so if the matching or weighting was effective)<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>. However, it is important to do so using a specific procedure that does not distort the target estimand. This procedure is called “g-computation” <span class="citation" data-cites="snowdenImplementationGComputationSimulated2011">(<a href="references.html#ref-snowdenImplementationGComputationSimulated2011" role="doc-biblioref">Snowden, Rose, and Mortimer 2011</a>)</span>, and its weighted variant is weighted g-computation <span class="citation" data-cites="gabrielInverseProbabilityTreatment2024 vansteelandtInvitedCommentaryGComputation2011">(<a href="references.html#ref-gabrielInverseProbabilityTreatment2024" role="doc-biblioref">Gabriel, Sachs, Martinussen, et al. 2024</a>; <a href="references.html#ref-vansteelandtInvitedCommentaryGComputation2011" role="doc-biblioref">Vansteelandt and Keiding 2011</a>)</span>, which will be the focus of this section.</p>
+<p>Further adjustment for covariates in the outcome model is a good idea as it improves precision at little to no cost and often reduces bias (though less so if the matching or weighting was effective)<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>. However, it is important to do so using a specific procedure that does not distort the target estimand. This procedure is called “g-computation” <span class="citation" data-cites="snowdenImplementationGComputationSimulated2011">(<a href="references.html#ref-snowdenImplementationGComputationSimulated2011" role="doc-biblioref">Snowden et al. 2011</a>)</span>, and its weighted variant is weighted g-computation <span class="citation" data-cites="gabrielInverseProbabilityTreatment2024 vansteelandtInvitedCommentaryGComputation2011">(<a href="references.html#ref-gabrielInverseProbabilityTreatment2024" role="doc-biblioref">Gabriel, Sachs, Martinussen, et al. 2024</a>; <a href="references.html#ref-vansteelandtInvitedCommentaryGComputation2011" role="doc-biblioref">Vansteelandt and Keiding 2011</a>)</span>, which will be the focus of this section.</p>
 <p><strong>Do not use the coefficient on treatment as an estimate of the treatment effect when covariates are included in the model</strong>. This coefficient generally does not correspond to a valid marginal estimand and its interpretation depends on correct specification of the outcome model (and if we could do that, we wouldn’t need propensity score analysis in the first place). G-computation is a method of computing a marginal treatment effect from a model that preserves the estimand, is agnostic to the form of the model, and doesn’t require the model to be correctly specified to see the benefits of covariate adjustment.</p>
 <p>Generally, g-computation works as follows:</p>
 <ol type="1">
@@ -338,14 +537,14 @@ div.csl-indent {
 </section>
 <section id="robust-and-cluster-robust-ses" class="level3" data-number="8.2.2">
 <h3 data-number="8.2.2" class="anchored" data-anchor-id="robust-and-cluster-robust-ses"><span class="header-section-number">8.2.2</span> Robust and cluster-robust SEs</h3>
-<p>Also known as sandwich SEs (due to the form of the formula for computing them), heteroscedasticity-consistent SEs, or Huber-White SEs, robust SEs are an adjustment to the usual maximum likelihood or ordinary least squares SEs that are robust to violations of some of the assumptions required for usual SEs to be valid <span class="citation" data-cites="mackinnonHeteroskedasticityconsistentCovarianceMatrix1985">(<a href="references.html#ref-mackinnonHeteroskedasticityconsistentCovarianceMatrix1985" role="doc-biblioref">MacKinnon and White 1985</a>)</span>. Robust SEs have been shown to be conservative (i.e., yield overly large SEs and wide confidence intervals) for estimating the ATE after some forms of weighting <span class="citation" data-cites="robinsMarginalStructuralModels2000">(<a href="references.html#ref-robinsMarginalStructuralModels2000" role="doc-biblioref">Robins, Hernán, and Brumback 2000</a>)</span>, though they can be either conservative or not for other weighting methods and estimands, such as for the ATT <span class="citation" data-cites="reifeisVarianceTreatmentEffect2020">(<a href="references.html#ref-reifeisVarianceTreatmentEffect2020" role="doc-biblioref">Reifeis and Hudgens 2022</a>)</span> or for entropy balancing <span class="citation" data-cites="chanGloballyEfficientNonparametric2016">(<a href="references.html#ref-chanGloballyEfficientNonparametric2016" role="doc-biblioref">Chan, Yam, and Zhang 2016</a>)</span>. Robust SEs treat the estimated weights as if they were fixed and known, ignoring uncertainty in their estimation. Although they are quick and simple to estimate, they should be used with caution, and the asymptoticially correct SEs or bootstrap (described below) should be preferred in most cases.</p>
+<p>Also known as sandwich SEs (due to the form of the formula for computing them), heteroscedasticity-consistent SEs, or Huber-White SEs, robust SEs are an adjustment to the usual maximum likelihood or ordinary least squares SEs that are robust to violations of some of the assumptions required for usual SEs to be valid <span class="citation" data-cites="mackinnonHeteroskedasticityconsistentCovarianceMatrix1985">(<a href="references.html#ref-mackinnonHeteroskedasticityconsistentCovarianceMatrix1985" role="doc-biblioref">MacKinnon and White 1985</a>)</span>. Robust SEs have been shown to be conservative (i.e., yield overly large SEs and wide confidence intervals) for estimating the ATE after some forms of weighting <span class="citation" data-cites="robinsMarginalStructuralModels2000">(<a href="references.html#ref-robinsMarginalStructuralModels2000" role="doc-biblioref">Robins et al. 2000</a>)</span>, though they can be either conservative or not for other weighting methods and estimands, such as for the ATT <span class="citation" data-cites="reifeisVarianceTreatmentEffect2020">(<a href="references.html#ref-reifeisVarianceTreatmentEffect2020" role="doc-biblioref">Reifeis and Hudgens 2022</a>)</span> or for entropy balancing <span class="citation" data-cites="chanGloballyEfficientNonparametric2016">(<a href="references.html#ref-chanGloballyEfficientNonparametric2016" role="doc-biblioref">Chan et al. 2016</a>)</span>. Robust SEs treat the estimated weights as if they were fixed and known, ignoring uncertainty in their estimation. Although they are quick and simple to estimate, they should be used with caution, and the asymptoticially correct SEs or bootstrap (described below) should be preferred in most cases.</p>
 <p>A version of robust SEs known as cluster-robust SEs <span class="citation" data-cites="liangLongitudinalDataAnalysis1986">(<a href="references.html#ref-liangLongitudinalDataAnalysis1986" role="doc-biblioref">Liang and Zeger 1986</a>)</span> can be used to account for dependence between observations within clusters (e.g., matched pairs). <span class="citation" data-cites="abadieRobustPostMatchingInference2020">Abadie and Spiess (<a href="references.html#ref-abadieRobustPostMatchingInference2020" role="doc-biblioref">2020</a>)</span> demonstrate analytically that cluster-robust SEs are generally valid after matching, whereas regular robust SEs can over- or under-estimate the true sampling variability of the effect estimator depending on the specification of the outcome model (if any) and degree of effect modification. Several simulation studies have further confirmed the validity of cluster-robust SEs after matching <span class="citation" data-cites="austinUseBootstrappingWhen2014 austinTypeErrorRates2009 gayatPropensityScoreApplied2012 wanMatchedUnmatchedAnalyses2019">(e.g., <a href="references.html#ref-austinUseBootstrappingWhen2014" role="doc-biblioref">Austin and Small 2014</a>; <a href="references.html#ref-austinTypeErrorRates2009" role="doc-biblioref">Austin 2009</a>; <a href="references.html#ref-gayatPropensityScoreApplied2012" role="doc-biblioref">Gayat et al. 2012</a>; <a href="references.html#ref-wanMatchedUnmatchedAnalyses2019" role="doc-biblioref">Wan 2019</a>)</span>.</p>
 <p>To compute robust SEs after g-computation, a method known as the delta method is used; this is a way to compute the SEs of the derived quantities (the expected potential outcomes and their contrast) from the variance of the coefficients of the outcome models. For nonlinear models (e.g., logistic regression), the delta method is only an approximation subject to error (though in many cases this error is small and shrinks in large samples). Because the delta method relies on the variance of the coefficients from the outcome model, it is important to correctly estimate these variances.</p>
 </section>
 <section id="bootstrapping" class="level3" data-number="8.2.3">
 <h3 data-number="8.2.3" class="anchored" data-anchor-id="bootstrapping"><span class="header-section-number">8.2.3</span> Bootstrapping</h3>
 <p>Bootstrapping is a technique used to simulate the sampling distribution of an estimator by repeatedly drawing samples with replacement and estimating the effect in each bootstrap sample <span class="citation" data-cites="efronBootstrapMethodsStandard1986 carpenterBootstrapConfidenceIntervals2000">(<a href="references.html#ref-efronBootstrapMethodsStandard1986" role="doc-biblioref">Efron and Tibshirani 1986</a>; <a href="references.html#ref-carpenterBootstrapConfidenceIntervals2000" role="doc-biblioref">Carpenter and Bithell 2000</a>)</span>. From the bootstrap distribution, SEs and CIs can be computed in several ways, including using the standard deviation of the bootstrap estimates as the SE estimate or using the 2.5 and 97.5 percentiles as 95% CI bounds. Although <span class="citation" data-cites="abadieFailureBootstrapMatching2008">Abadie and Imbens (<a href="references.html#ref-abadieFailureBootstrapMatching2008" role="doc-biblioref">2008</a>)</span> found analytically that the bootstrap is inappropriate for matching, simulation evidence has found it to be adequate in many cases <span class="citation" data-cites="hillIntervalEstimationTreatment2006 austinUseBootstrappingWhen2014 austinEstimatingEffectTreatment2017">(<a href="references.html#ref-hillIntervalEstimationTreatment2006" role="doc-biblioref">Hill and Reiter 2006</a>; <a href="references.html#ref-austinUseBootstrappingWhen2014" role="doc-biblioref">Austin and Small 2014</a>; <a href="references.html#ref-austinEstimatingEffectTreatment2017" role="doc-biblioref">Austin and Stuart 2017</a>)</span>.</p>
-<p>Traditionally, bootstrapping involves performing the entire estimation process in each bootstrap sample, including propensity score estimation, matching or weighting, and effect estimation. For weighting, the traditional bootstrap works very well and is generally the best method to use for estimating CIs <span class="citation" data-cites="chanGloballyEfficientNonparametric2016 austinBootstrapVsAsymptotic2022">(<a href="references.html#ref-chanGloballyEfficientNonparametric2016" role="doc-biblioref">Chan, Yam, and Zhang 2016</a>; <a href="references.html#ref-austinBootstrapVsAsymptotic2022" role="doc-biblioref">Austin 2022</a>)</span>. For matching, this method may be conservative in some cases (i.e., they are wider than necessary to achieve nominal coverage) <span class="citation" data-cites="austinUseBootstrappingWhen2014">(<a href="references.html#ref-austinUseBootstrappingWhen2014" role="doc-biblioref">Austin and Small 2014</a>)</span>. More accurate intervals have been found when using the matched/cluster bootstrap described by <span class="citation" data-cites="austinUseBootstrappingWhen2014">Austin and Small (<a href="references.html#ref-austinUseBootstrappingWhen2014" role="doc-biblioref">2014</a>)</span> and <span class="citation" data-cites="abadieRobustPostMatchingInference2020">Abadie and Spiess (<a href="references.html#ref-abadieRobustPostMatchingInference2020" role="doc-biblioref">2020</a>)</span>. The cluster bootstrap involves sampling matched pairs/strata of units from the matched sample (i.e., after the matching is already done) and estimating the effect within each sample composed of the sampled pairs.</p>
+<p>Traditionally, bootstrapping involves performing the entire estimation process in each bootstrap sample, including propensity score estimation, matching or weighting, and effect estimation. For weighting, the traditional bootstrap works very well and is generally the best method to use for estimating CIs <span class="citation" data-cites="chanGloballyEfficientNonparametric2016 austinBootstrapVsAsymptotic2022">(<a href="references.html#ref-chanGloballyEfficientNonparametric2016" role="doc-biblioref">Chan et al. 2016</a>; <a href="references.html#ref-austinBootstrapVsAsymptotic2022" role="doc-biblioref">Austin 2022</a>)</span>. For matching, this method may be conservative in some cases (i.e., they are wider than necessary to achieve nominal coverage) <span class="citation" data-cites="austinUseBootstrappingWhen2014">(<a href="references.html#ref-austinUseBootstrappingWhen2014" role="doc-biblioref">Austin and Small 2014</a>)</span>. More accurate intervals have been found when using the matched/cluster bootstrap described by <span class="citation" data-cites="austinUseBootstrappingWhen2014">Austin and Small (<a href="references.html#ref-austinUseBootstrappingWhen2014" role="doc-biblioref">2014</a>)</span> and <span class="citation" data-cites="abadieRobustPostMatchingInference2020">Abadie and Spiess (<a href="references.html#ref-abadieRobustPostMatchingInference2020" role="doc-biblioref">2020</a>)</span>. The cluster bootstrap involves sampling matched pairs/strata of units from the matched sample (i.e., after the matching is already done) and estimating the effect within each sample composed of the sampled pairs.</p>
 <div id="tbl-se-ci" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-se-ci-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -398,7 +597,7 @@ Table&nbsp;8.1: Conditioning methods and corresponding recommended methods for e
 </div>
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
 <div id="ref-abadieFailureBootstrapMatching2008" class="csl-entry" role="listitem">
 Abadie, Alberto, and Guido W. Imbens. 2008. <span>“On the Failure of the Bootstrap for Matching Estimators.”</span> <em>Econometrica</em> 76 (6): 1537–57. <a href="https://doi.org/10.3982/ECTA6474">https://doi.org/10.3982/ECTA6474</a>.
 </div>
@@ -409,7 +608,7 @@ Abadie, Alberto, and Jann Spiess. 2020. <span>“Robust Post-Matching Inference.
 Austin, Peter C. 2009. <span>“Type <span>I Error Rates</span>, <span>Coverage</span> of <span>Confidence Intervals</span>, and <span>Variance Estimation</span> in <span>Propensity-Score Matched Analyses</span>.”</span> <em>The International Journal of Biostatistics</em> 5 (1). <a href="https://doi.org/10.2202/1557-4679.1146">https://doi.org/10.2202/1557-4679.1146</a>.
 </div>
 <div id="ref-austinBootstrapVsAsymptotic2022" class="csl-entry" role="listitem">
-———. 2022. <span>“Bootstrap Vs Asymptotic Variance Estimation When Using Propensity Score Weighting with Continuous and Binary Outcomes.”</span> <em>Statistics in Medicine</em> 41 (22): 4426–43. <a href="https://doi.org/10.1002/sim.9519">https://doi.org/10.1002/sim.9519</a>.
+Austin, Peter C. 2022. <span>“Bootstrap Vs Asymptotic Variance Estimation When Using Propensity Score Weighting with Continuous and Binary Outcomes.”</span> <em>Statistics in Medicine</em> 41 (22): 4426–43. <a href="https://doi.org/10.1002/sim.9519">https://doi.org/10.1002/sim.9519</a>.
 </div>
 <div id="ref-austinUseBootstrappingWhen2014" class="csl-entry" role="listitem">
 Austin, Peter C., and Dylan S. Small. 2014. <span>“The Use of Bootstrapping When Using Propensity-Score Matching Without Replacement: A Simulation Study.”</span> <em>Statistics in Medicine</em> 33 (24): 4306–19. <a href="https://doi.org/10.1002/sim.6276">https://doi.org/10.1002/sim.6276</a>.
@@ -418,7 +617,7 @@ Austin, Peter C., and Dylan S. Small. 2014. <span>“The Use of Bootstrapping Wh
 Austin, Peter C., and Elizabeth A. Stuart. 2017. <span>“Estimating the Effect of Treatment on Binary Outcomes Using Full Matching on the Propensity Score.”</span> <em>Statistical Methods in Medical Research</em> 26 (6): 2505–25. <a href="https://doi.org/10.1177/0962280215601134">https://doi.org/10.1177/0962280215601134</a>.
 </div>
 <div id="ref-cafriVarianceEstimationRisk2023" class="csl-entry" role="listitem">
-Cafri, Guy, and Peter C. Austin. 2023. <span>“Variance Estimation of the Risk Difference When Using Propensity<span>-</span>Score Matching and Weighting with Time<span>-</span>to<span>-</span>Event Outcomes.”</span> <em>Pharmaceutical Statistics</em>, May, pst.2317. <a href="https://doi.org/10.1002/pst.2317">https://doi.org/10.1002/pst.2317</a>.
+Cafri, Guy, and Peter C. Austin. 2023. <span>“Variance Estimation of the Risk Difference When Using Propensity<span>-</span>Score Matching and Weighting with Time<span>-</span>to<span>-</span>Event Outcomes.”</span> <em>Pharmaceutical Statistics</em>, May 31, pst.2317. <a href="https://doi.org/10.1002/pst.2317">https://doi.org/10.1002/pst.2317</a>.
 </div>
 <div id="ref-carpenterBootstrapConfidenceIntervals2000" class="csl-entry" role="listitem">
 Carpenter, James, and John Bithell. 2000. <span>“Bootstrap Confidence Intervals: When, Which, What? A Practical Guide for Medical Statisticians.”</span> <em>Statistics in Medicine</em> 19 (9): 1141–64. <a href="https://doi.org/10.1002/(SICI)1097-0258(20000515)19:9<1141::AID-SIM479>3.0.CO;2-F">https://doi.org/10.1002/(SICI)1097-0258(20000515)19:9&lt;1141::AID-SIM479&gt;3.0.CO;2-F</a>.
@@ -427,16 +626,16 @@ Carpenter, James, and John Bithell. 2000. <span>“Bootstrap Confidence Interval
 Chan, Kwun Chuen Gary, Sheung Chi Phillip Yam, and Zheng Zhang. 2016. <span>“Globally Efficient Non-Parametric Inference of Average Treatment Effects by Empirical Balancing Calibration Weighting.”</span> <em>Journal of the Royal Statistical Society: Series B (Statistical Methodology)</em> 78 (3): 673–700. <a href="https://doi.org/10.1111/rssb.12129">https://doi.org/10.1111/rssb.12129</a>.
 </div>
 <div id="ref-danielDoubleRobustness2018" class="csl-entry" role="listitem">
-Daniel, Rhian M. 2018. <span>“Double Robustness.”</span> In, 1–14. American Cancer Society. <a href="https://doi.org/10.1002/9781118445112.stat08068">https://doi.org/10.1002/9781118445112.stat08068</a>.
+Daniel, Rhian M. 2018. <em>Double Robustness</em>. American Cancer Society. <a href="https://doi.org/10.1002/9781118445112.stat08068">https://doi.org/10.1002/9781118445112.stat08068</a>.
 </div>
 <div id="ref-efronBootstrapMethodsStandard1986" class="csl-entry" role="listitem">
 Efron, B., and R. Tibshirani. 1986. <span>“Bootstrap Methods for Standard Errors, Confidence Intervals, and Other Measures of Statistical Accuracy.”</span> <em>Statistical Science</em> 1 (1): 54–75. <a href="https://www.jstor.org/stable/2245500">https://www.jstor.org/stable/2245500</a>.
 </div>
 <div id="ref-gabrielInverseProbabilityTreatment2024" class="csl-entry" role="listitem">
-Gabriel, Erin E., Michael C. Sachs, Torben Martinussen, Ingeborg Waernbaum, Els Goetghebeur, Stijn Vansteelandt, and Arvid Sjölander. 2024. <span>“Inverse Probability of Treatment Weighting with Generalized Linear Outcome Models for Doubly Robust Estimation.”</span> <em>Statistics in Medicine</em> 43 (3): 534–47. <a href="https://doi.org/10.1002/sim.9969">https://doi.org/10.1002/sim.9969</a>.
+Gabriel, Erin E., Michael C. Sachs, Torben Martinussen, et al. 2024. <span>“Inverse Probability of Treatment Weighting with Generalized Linear Outcome Models for Doubly Robust Estimation.”</span> <em>Statistics in Medicine</em> 43 (3): 534–47. <a href="https://doi.org/10.1002/sim.9969">https://doi.org/10.1002/sim.9969</a>.
 </div>
 <div id="ref-gabrielPropensityWeightingAdjustment2024" class="csl-entry" role="listitem">
-Gabriel, Erin E., Michael C. Sachs, Ingeborg Waernbaum, Els Goetghebeur, Paul F. Blanche, Stijn Vansteelandt, Arvid Sjölander, and Thomas Scheike. 2024. <span>“Propensity Weighting Plus Adjustment in Proportional Hazards Model Is Not Doubly Robust.”</span> <em>Biometrics</em> 80 (3): ujae069. <a href="https://doi.org/10.1093/biomtc/ujae069">https://doi.org/10.1093/biomtc/ujae069</a>.
+Gabriel, Erin E., Michael C. Sachs, Ingeborg Waernbaum, et al. 2024. <span>“Propensity Weighting Plus Adjustment in Proportional Hazards Model Is Not Doubly Robust.”</span> <em>Biometrics</em> 80 (3): ujae069. <a href="https://doi.org/10.1093/biomtc/ujae069">https://doi.org/10.1093/biomtc/ujae069</a>.
 </div>
 <div id="ref-gayatPropensityScoreApplied2012" class="csl-entry" role="listitem">
 Gayat, Etienne, Matthieu Resche-Rigon, Jean-Yves Mary, and Raphaël Porcher. 2012. <span>“Propensity Score Applied to Survival Data Analysis Through Proportional Hazards Models: A <span>Monte Carlo</span> Study.”</span> <em>Pharmaceutical Statistics</em> 11 (3): 222–29. <a href="https://doi.org/10.1002/pst.537">https://doi.org/10.1002/pst.537</a>.
@@ -460,7 +659,7 @@ Lunceford, Jared K., and Marie Davidian. 2004. <span>“Stratification and Weigh
 MacKinnon, James G, and Halbert White. 1985. <span>“Some Heteroskedasticity-Consistent Covariance Matrix Estimators with Improved Finite Sample Properties.”</span> <em>Journal of Econometrics</em> 29 (3): 305–25. <a href="https://doi.org/10.1016/0304-4076(85)90158-7">https://doi.org/10.1016/0304-4076(85)90158-7</a>.
 </div>
 <div id="ref-pakInterpretabilityCancerClinical2017" class="csl-entry" role="listitem">
-Pak, Kyongsun, Hajime Uno, Dae Hyun Kim, Lu Tian, Robert C. Kane, Masahiro Takeuchi, Haoda Fu, Brian Claggett, and Lee-Jen Wei. 2017. <span>“Interpretability of Cancer Clinical Trial Results Using Restricted Mean Survival Time as an Alternative to the Hazard Ratio.”</span> <em>JAMA Oncology</em> 3 (12): 1692. <a href="https://doi.org/10.1001/jamaoncol.2017.2797">https://doi.org/10.1001/jamaoncol.2017.2797</a>.
+Pak, Kyongsun, Hajime Uno, Dae Hyun Kim, et al. 2017. <span>“Interpretability of Cancer Clinical Trial Results Using Restricted Mean Survival Time as an Alternative to the Hazard Ratio.”</span> <em>JAMA Oncology</em> 3 (12): 1692. <a href="https://doi.org/10.1001/jamaoncol.2017.2797">https://doi.org/10.1001/jamaoncol.2017.2797</a>.
 </div>
 <div id="ref-reifeisVarianceTreatmentEffect2020" class="csl-entry" role="listitem">
 Reifeis, Sarah A, and Michael G Hudgens. 2022. <span>“On <span>Variance</span> of the <span>Treatment Effect</span> in the <span>Treated When Estimated</span> by <span>Inverse Probability Weighting</span>.”</span> <em>American Journal of Epidemiology</em> 191 (6): 1092–97. <a href="https://doi.org/10.1093/aje/kwac014">https://doi.org/10.1093/aje/kwac014</a>.
@@ -469,7 +668,7 @@ Reifeis, Sarah A, and Michael G Hudgens. 2022. <span>“On <span>Variance</span>
 Robins, James M., Miguel Ángel Hernán, and Babette Brumback. 2000. <span>“Marginal Structural Models and Causal Inference in Epidemiology.”</span> <em>Epidemiology</em> 11 (5): 550–60. <a href="https://doi.org/10.1097/00001648-200009000-00011">https://doi.org/10.1097/00001648-200009000-00011</a>.
 </div>
 <div id="ref-snowdenImplementationGComputationSimulated2011" class="csl-entry" role="listitem">
-Snowden, Jonathan M., Sherri Rose, and Kathleen M. Mortimer. 2011. <span>“Implementation of G-Computation on a Simulated Data Set: Demonstration of a Causal Inference Technique.”</span> <em>American Journal of Epidemiology</em> 173 (7): 731–38. <a href="https://doi.org/10.1093/aje/kwq472">https://doi.org/10.1093/aje/kwq472</a>.
+Snowden, Jonathan M., Sherri Rose, and Kathleen M. Mortimer. 2011. <span>“Implementation of g-Computation on a Simulated Data Set: Demonstration of a Causal Inference Technique.”</span> <em>American Journal of Epidemiology</em> 173 (7): 731–38. <a href="https://doi.org/10.1093/aje/kwq472">https://doi.org/10.1093/aje/kwq472</a>.
 </div>
 <div id="ref-stefanskiCalculusMEstimation2002" class="csl-entry" role="listitem">
 Stefanski, Leonard A., and Dennis D. Boos. 2002. <span>“The Calculus of m-Estimation.”</span> <em>The American Statistician</em> 56 (1): 29–38. <a href="https://doi.org/10.1198/000313002753631330">https://doi.org/10.1198/000313002753631330</a>.
@@ -495,8 +694,84 @@ Wan, Fei. 2019. <span>“Matched or Unmatched Analyses with Propensity-Scorematc
 </section>
 
 </main> <!-- /main -->
+<script>
+// Light / Dark / System switch, built on Quarto's own light-dark mechanism (Quarto 1.7+ with
+// respect-user-color-scheme: true). Quarto stores an explicit choice in localStorage["quarto-color-scheme"]
+// ("default" = light, "alternate" = dark) and, when nothing is stored, follows prefers-color-scheme and
+// tracks OS changes live. "System" here therefore means: remove the stored choice and apply the OS preference.
+(function () {
+  const KEY = "quarto-color-scheme";
+  const mq = window.matchMedia("(prefers-color-scheme: dark)");
+  const stored = () => { try { return window.localStorage.getItem(KEY); } catch { return null; } };
+  const mode = () => { const s = stored(); return s === "alternate" ? "dark" : s === "default" ? "light" : "system"; };
+  const isDark = () => document.body.classList.contains("quarto-dark");
+  const apply = (dark) => {
+    if (isDark() === dark) return;
+    if (typeof window.quartoToggleColorScheme === "function") { window.quartoToggleColorScheme(); }
+  };
+  const choose = (m) => {
+    const dark = m === "dark" ? true : m === "light" ? false : mq.matches;
+    apply(dark);
+    try {
+      if (m === "system") { window.localStorage.removeItem(KEY); }
+      else { window.localStorage.setItem(KEY, dark ? "alternate" : "default"); }
+    } catch {}
+    mark();
+  };
+  const items = [["light", "Light", "bi-sun"], ["dark", "Dark", "bi-moon"], ["system", "System", "bi-circle-half"]];
+  let menu;
+  const mark = () => {
+    if (!menu) return;
+    const m = mode();
+    menu.querySelectorAll("[data-mode]").forEach((a) => {
+      const on = a.dataset.mode === m;
+      a.classList.toggle("active", on);
+      a.setAttribute("aria-current", on ? "true" : "false");
+    });
+    const icon = menu.parentElement.querySelector(".dss-switch-icon");
+    if (icon) icon.className = "bi dss-switch-icon " + items.find((i) => i[0] === m)[2];
+  };
+  const build = () => {
+    const nav = document.querySelector(".navbar .navbar-nav.ms-auto") || document.querySelector(".navbar .navbar-nav");
+    if (!nav || nav.querySelector(".dss-theme-switch")) return;
+    const li = document.createElement("li");
+    li.className = "nav-item dropdown dss-theme-switch";
+    li.innerHTML =
+      '<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Colour scheme" title="Colour scheme">' +
+      '<i class="bi dss-switch-icon bi-circle-half"></i></a>' +
+      '<ul class="dropdown-menu dropdown-menu-end">' +
+      items.map(([m, label, icon]) => '<li><a class="dropdown-item" href="#" data-mode="' + m + '"><i class="bi ' + icon + '"></i> ' + label + "</a></li>").join("") +
+      "</ul>";
+    nav.appendChild(li);
+    menu = li.querySelector(".dropdown-menu");
+    menu.addEventListener("click", (e) => {
+      const a = e.target.closest("[data-mode]");
+      if (!a) return;
+      e.preventDefault();
+      choose(a.dataset.mode);
+    });
+    mark();
+  };
+  if (document.readyState === "loading") { document.addEventListener("DOMContentLoaded", build); } else { build(); }
+  // Quarto's listener re-applies the OS preference on change when nothing is stored; keep the tick in step.
+  mq.addEventListener("change", () => setTimeout(mark, 0));
+})();
+</script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
     const icon = "";
     const anchorJS = new window.AnchorJS();
     anchorJS.options = {
@@ -546,13 +821,14 @@ Wan, Fei. 2019. <span>“Matched or Unmatched Analyses with Propensity-Scorematc
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy
@@ -581,6 +857,11 @@ Wan, Fei. 2019. <span>“Matched or Unmatched Analyses with Propensity-Scorematc
           if (link.dataset.originalHref !== undefined) {
             link.href = link.dataset.originalHref;
           }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
         }
       }
     function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
@@ -907,8 +1188,37 @@ Wan, Fei. 2019. <span>“Matched or Unmatched Analyses with Propensity-Scorematc
   </div>
 </nav>
 </div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p><a href="https://www.iq.harvard.edu/" class="footer-logo" aria-label="IQSS, the Institute for Quantitative Social Science"></a><span>Data Science Services · Institute for Quantitative Social Science · Harvard University</span></p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/IQSS/dss-ps/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item">
+    <a class="nav-link" href="https://www.iq.harvard.edu/data-science-services">
+<p>Data Science Services</p>
+</a>
+  </li>  
+    <li class="nav-item">
+    <a class="nav-link" href="https://www.iq.harvard.edu/data-science-services/contact-us">
+<p>Request help</p>
+</a>
+  </li>  
+    <li class="nav-item">
+    <a class="nav-link" href="https://www.iq.harvard.edu/">
+<p>IQSS</p>
+</a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
 
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/IQSS/dss-ps/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
+</body></html>

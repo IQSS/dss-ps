@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.32">
+<meta name="generator" content="quarto-1.10.18">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -10,10 +10,16 @@
 
 <title>10&nbsp; Advanced topics – Matching and Weighting for Causal Inference: A Primer and Tutorial</title>
 <style>
-code{white-space: pre-wrap;}
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 span.smallcaps{font-variant: small-caps;}
-div.columns{display: flex; gap: min(4vw, 1.5em);}
-div.column{flex: auto; overflow-x: auto;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
@@ -25,7 +31,6 @@ ul.task-list li input[type="checkbox"] {
 div.csl-bib-body { }
 div.csl-entry {
   clear: both;
-  margin-bottom: 0em;
 }
 .hanging-indent div.csl-entry {
   margin-left:2em;
@@ -45,7 +50,6 @@ div.csl-indent {
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
 <script src="site_libs/clipboard/clipboard.min.js"></script>
 <script src="site_libs/quarto-search/autocomplete.umd.js"></script>
 <script src="site_libs/quarto-search/fuse.min.js"></script>
@@ -53,23 +57,27 @@ div.csl-indent {
 <meta name="quarto:offset" content="./">
 <link href="./reporting.html" rel="next">
 <link href="./sensitivity.html" rel="prev">
-<link href="./images/favicon.png" rel="icon" type="image/png">
+<link href="site_libs/quarto-contrib/quarto-project/IQSS/dss-theme-book/assets/favicon.png" rel="icon" type="image/png">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-48fb113fea7c09ade55c8c495d57f66a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-344bcfd4b59506bf16a64db76aeeab59.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-8153ab361ad1fe9cc7f80a48e4dffba3.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-344bcfd4b59506bf16a64db76aeeab59.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
-  "location": "sidebar",
+  "location": "navbar",
   "copy-button": false,
   "collapse-after": 3,
-  "panel-placement": "start",
-  "type": "textbox",
+  "panel-placement": "end",
+  "type": "overlay",
   "limit": 50,
   "keyboard-shortcut": [
     "f",
@@ -91,9 +99,10 @@ div.csl-indent {
     "search-label": "Search"
   }
 }</script>
+<meta name="theme-color" content="#3C72B4">
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
 
 <script type="text/javascript">
 const typesetMath = (el) => {
@@ -106,7 +115,7 @@ const typesetMath = (el) => {
     var macros = [];
     for (var i = 0; i < mathElements.length; i++) {
       var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
         window.katex.render(texText.data, mathElements[i], {
           displayMode: mathElements[i].classList.contains('display'),
           throwOnError: false,
@@ -124,10 +133,215 @@ window.Quarto = {
 
 </head>
 
-<body class="nav-sidebar floating quarto-light">
+<body class="nav-sidebar floating nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const queryPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    const darkModeDefault = queryPrefersDark.matches;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    queryPrefersDark.addEventListener("change", e => {
+      if(window.localStorage.getItem("quarto-color-scheme") !== null)
+        return;
+      const alternate = e.matches
+      toggleColorMode(alternate);
+      localAlternateSentinel = e.matches ? 'alternate' : 'default'; // this is used alongside local storage!
+      toggleGiscusIfUsed(alternate, darkModeDefault);
+    });
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="https://www.iq.harvard.edu/data-science-services" class="navbar-brand navbar-brand-logo">
+    <img src="site_libs/quarto-contrib/quarto-project/IQSS/dss-theme-book/assets/dss-logo.svg" alt="" class="navbar-logo light-content">
+    <img src="site_libs/quarto-contrib/quarto-project/IQSS/dss-theme-book/assets/dss-logo-dark.svg" alt="" class="navbar-logo dark-content">
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="https://iqss.github.io/dss-training/"> 
+<span class="menu-text">Training materials</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://www.iq.harvard.edu/data-science-services"> 
+<span class="menu-text">Data Science Services</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://www.iq.harvard.edu/data-science-services/contact-us"> 
+<span class="menu-text">Request help</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+    <a href="https://github.com/IQSS/dss-ps/" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
   <nav class="quarto-secondary-nav">
     <div class="container-fluid d-flex">
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
@@ -136,29 +350,13 @@ window.Quarto = {
         <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./running.html">Running the Analysis</a></li><li class="breadcrumb-item"><a href="./advanced.html"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Advanced topics</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
-      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
-        <i class="bi bi-search"></i>
-      </button>
     </div>
   </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
-    <div class="pt-lg-2 mt-2 text-left sidebar-header">
-    <div class="sidebar-title mb-0 py-0">
-      <a href="./">Matching and Weighting for Causal Inference: A Primer and Tutorial</a> 
-        <div class="sidebar-tools-main">
-    <a href="https://github.com/IQSS/dss-ps/" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
-</div>
-    </div>
-      </div>
-        <div class="mt-2 flex-shrink-0 align-items-center">
-        <div class="sidebar-search">
-        <div id="quarto-search" class="" title="Search"></div>
-        </div>
-        </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
@@ -309,6 +507,7 @@ window.Quarto = {
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
+
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./running.html">Running the Analysis</a></li><li class="breadcrumb-item"><a href="./advanced.html"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Advanced topics</span></a></li></ol></nav>
 <div class="quarto-title">
 <h1 class="title"><span id="sec-advanced" class="quarto-section-identifier"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Advanced topics</span></span></h1>
@@ -343,13 +542,13 @@ window.Quarto = {
 </section>
 <section id="continuous-treatments" class="level3" data-number="10.2.2">
 <h3 data-number="10.2.2" class="anchored" data-anchor-id="continuous-treatments"><span class="header-section-number">10.2.2</span> Continuous treatments</h3>
-<p>The usual estimand for a continuous treatment is the average dose-response function (ADRF), which links the expected potential outcome (i.e., the average outcome if everyone was assigned to a single treatment value) to the corresponding treatment level. Propensity score analysis for continuous treatments involves adjusting the sample so that the treatment is independent from the covariates. This can be done using matching <span class="citation" data-cites="wuMatchingGeneralizedPropensity2022">(<a href="references.html#ref-wuMatchingGeneralizedPropensity2022" role="doc-biblioref">Wu et al. 2022</a>)</span> or weighting <span class="citation" data-cites="robinsMarginalStructuralModels2000 zhuBoostingAlgorithmEstimating2015 hulingIndependenceWeightsCausal2023a">(<a href="references.html#ref-robinsMarginalStructuralModels2000" role="doc-biblioref">Robins, Hernán, and Brumback 2000</a>; <a href="references.html#ref-zhuBoostingAlgorithmEstimating2015" role="doc-biblioref">Zhu, Coffman, and Ghosh 2015</a>; <a href="references.html#ref-hulingIndependenceWeightsCausal2023a" role="doc-biblioref">Huling, Greifer, and Chen 2023</a>)</span> (available in <code>WeightIt</code>). The propensity score is instead represented as a single-valued generalized propensity score corresponding to the conditional density of treatment given the covariates (i.e., rather than the probability, which would be 0 for a all values of a truly continuous treatment) <span class="citation" data-cites="hiranoPropensityScoreContinuous2005">(<a href="references.html#ref-hiranoPropensityScoreContinuous2005" role="doc-biblioref">Hirano and Imbens 2005</a>)</span>. Balance is often assessed using the correlations between the treatment and each covariate in the adjusted sample <span class="citation" data-cites="austinAssessingCovariateBalance2019">(<a href="references.html#ref-austinAssessingCovariateBalance2019" role="doc-biblioref">Austin 2019</a>)</span>, though more holistic measures such as the distance covariance have also been developed <span class="citation" data-cites="hulingIndependenceWeightsCausal2023a">(<a href="references.html#ref-hulingIndependenceWeightsCausal2023a" role="doc-biblioref">Huling, Greifer, and Chen 2023</a>)</span>. To estimate the ADRF, one can fit a flexible model for the outcome given the treatment in the weighted sample.</p>
+<p>The usual estimand for a continuous treatment is the average dose-response function (ADRF), which links the expected potential outcome (i.e., the average outcome if everyone was assigned to a single treatment value) to the corresponding treatment level. Propensity score analysis for continuous treatments involves adjusting the sample so that the treatment is independent from the covariates. This can be done using matching <span class="citation" data-cites="wuMatchingGeneralizedPropensity2022">(<a href="references.html#ref-wuMatchingGeneralizedPropensity2022" role="doc-biblioref">Wu et al. 2022</a>)</span> or weighting <span class="citation" data-cites="robinsMarginalStructuralModels2000 zhuBoostingAlgorithmEstimating2015 hulingIndependenceWeightsCausal2023a">(<a href="references.html#ref-robinsMarginalStructuralModels2000" role="doc-biblioref">Robins et al. 2000</a>; <a href="references.html#ref-zhuBoostingAlgorithmEstimating2015" role="doc-biblioref">Zhu et al. 2015</a>; <a href="references.html#ref-hulingIndependenceWeightsCausal2023a" role="doc-biblioref">Huling et al. 2023</a>)</span> (available in <code>WeightIt</code>). The propensity score is instead represented as a single-valued generalized propensity score corresponding to the conditional density of treatment given the covariates (i.e., rather than the probability, which would be 0 for a all values of a truly continuous treatment) <span class="citation" data-cites="hiranoPropensityScoreContinuous2005">(<a href="references.html#ref-hiranoPropensityScoreContinuous2005" role="doc-biblioref">Hirano and Imbens 2005</a>)</span>. Balance is often assessed using the correlations between the treatment and each covariate in the adjusted sample <span class="citation" data-cites="austinAssessingCovariateBalance2019">(<a href="references.html#ref-austinAssessingCovariateBalance2019" role="doc-biblioref">Austin 2019</a>)</span>, though more holistic measures such as the distance covariance have also been developed <span class="citation" data-cites="hulingIndependenceWeightsCausal2023a">(<a href="references.html#ref-hulingIndependenceWeightsCausal2023a" role="doc-biblioref">Huling et al. 2023</a>)</span>. To estimate the ADRF, one can fit a flexible model for the outcome given the treatment in the weighted sample.</p>
 </section>
 </section>
 <section id="longitudinalsequential-treatments" class="level2" data-number="10.3">
 <h2 data-number="10.3" class="anchored" data-anchor-id="longitudinalsequential-treatments"><span class="header-section-number">10.3</span> Longitudinal/sequential treatments</h2>
-<p>Methods have been developed for estimating the effect of a treatment that can occur at multiple time points. For example, <span class="citation" data-cites="robinsMarginalStructuralModels2000">Robins, Hernán, and Brumback (<a href="references.html#ref-robinsMarginalStructuralModels2000" role="doc-biblioref">2000</a>)</span> described methods for estimating the effect of zidovudine (AZT) treatment on mortality in HIV-infected patients, where treatment was defined for each day since start of follow-up as the dose of AZT received that day. These special methods must be used when confounding is time-varying, i.e., confounders of subsequent treatment and the outcome are themselves affected by previous treatments. Simply adjusting for these time-varying confounders by regression adjustment or standard propensity score analysis causes the same problems that adjusting for any post-treatment variable does.</p>
-<p>The methods used for adjusting for time-varying confounding are called “g-methods” and are described in <span class="citation" data-cites="hernanCausalInferenceWhat2020">Hernán and Robins (<a href="references.html#ref-hernanCausalInferenceWhat2020" role="doc-biblioref">2020</a>)</span>. The simplest one is inverse probability weighting of marginal structural models, which essentially involves creating a propensity score weight at each time point and multiplying them together (available in <code>WeightIt</code>); ideally, this yields a scenario analogous to one in which treatment is randomized at each time point. <span class="citation" data-cites="thoemmesPrimerInverseProbability2016">Thoemmes and Ong (<a href="references.html#ref-thoemmesPrimerInverseProbability2016" role="doc-biblioref">2016</a>)</span> and <span class="citation" data-cites="robinsMarginalStructuralModels2000">Robins, Hernán, and Brumback (<a href="references.html#ref-robinsMarginalStructuralModels2000" role="doc-biblioref">2000</a>)</span> provide clear examples of the method.</p>
+<p>Methods have been developed for estimating the effect of a treatment that can occur at multiple time points. For example, <span class="citation" data-cites="robinsMarginalStructuralModels2000">Robins et al. (<a href="references.html#ref-robinsMarginalStructuralModels2000" role="doc-biblioref">2000</a>)</span> described methods for estimating the effect of zidovudine (AZT) treatment on mortality in HIV-infected patients, where treatment was defined for each day since start of follow-up as the dose of AZT received that day. These special methods must be used when confounding is time-varying, i.e., confounders of subsequent treatment and the outcome are themselves affected by previous treatments. Simply adjusting for these time-varying confounders by regression adjustment or standard propensity score analysis causes the same problems that adjusting for any post-treatment variable does.</p>
+<p>The methods used for adjusting for time-varying confounding are called “g-methods” and are described in <span class="citation" data-cites="hernanCausalInferenceWhat2020">Hernán and Robins (<a href="references.html#ref-hernanCausalInferenceWhat2020" role="doc-biblioref">2020</a>)</span>. The simplest one is inverse probability weighting of marginal structural models, which essentially involves creating a propensity score weight at each time point and multiplying them together (available in <code>WeightIt</code>); ideally, this yields a scenario analogous to one in which treatment is randomized at each time point. <span class="citation" data-cites="thoemmesPrimerInverseProbability2016">Thoemmes and Ong (<a href="references.html#ref-thoemmesPrimerInverseProbability2016" role="doc-biblioref">2016</a>)</span> and <span class="citation" data-cites="robinsMarginalStructuralModels2000">Robins et al. (<a href="references.html#ref-robinsMarginalStructuralModels2000" role="doc-biblioref">2000</a>)</span> provide clear examples of the method.</p>
 </section>
 <section id="missing-data" class="level2" data-number="10.4">
 <h2 data-number="10.4" class="anchored" data-anchor-id="missing-data"><span class="header-section-number">10.4</span> Missing data</h2>
@@ -358,7 +557,7 @@ window.Quarto = {
 <p>Censoring weights are an alternative to imputation that are more commonly used when a single variable, e.g., the outcome, is missing for some units. Censoring weights discard any units with missing data and weight the remaining units to resemble the full sample (i.e., the original sample that included those with missing data) <span class="citation" data-cites="hernanCausalInferenceWhat2020">(<a href="references.html#ref-hernanCausalInferenceWhat2020" role="doc-biblioref">Hernán and Robins 2020</a>, Ch 12.6)</span>. Censoring weights are multiplied by propensity score weights when both are used to create a final set of weights that adjust for both confounding and censoring. Censoring weights are especially common with longitudinal treatments and in survival analysis.</p>
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
 <div id="ref-austinAssessingCovariateBalance2019" class="csl-entry" role="listitem">
 Austin, Peter C. 2019. <span>“Assessing Covariate Balance When Using the Generalized Propensity Score with Quantitative or Continuous Exposures.”</span> <em>Statistical Methods in Medical Research</em> 28 (5): 1365–77. <a href="https://doi.org/10.1177/0962280218756159">https://doi.org/10.1177/0962280218756159</a>.
 </div>
@@ -369,16 +568,16 @@ Cham, Heining, and Stephen G. West. 2016. <span>“Propensity Score Analysis wit
 Dong, Jing, Junni L Zhang, Shuxi Zeng, and Fan Li. 2020. <span>“Subgroup Balancing Propensity Score.”</span> <em>Statistical Methods in Medical Research</em> 29 (3): 659–76. <a href="https://doi.org/10.1177/0962280219870836">https://doi.org/10.1177/0962280219870836</a>.
 </div>
 <div id="ref-greenExaminingModerationAnalyses2014" class="csl-entry" role="listitem">
-Green, Kerry M., and Elizabeth A. Stuart. 2014. <span>“Examining Moderation Analyses in Propensity Score Methods: Application to Depression and Substance Use.”</span> <em>Journal of Consulting and Clinical Psychology</em>, Advances in data analytic methods, 82 (5): 773–83. <a href="https://doi.org/10.1037/a0036515">https://doi.org/10.1037/a0036515</a>.
+Green, Kerry M., and Elizabeth A. Stuart. 2014. <span>“Examining Moderation Analyses in Propensity Score Methods: Application to Depression and Substance Use.”</span> <em>Journal of Consulting and Clinical Psychology</em>, Advances in data analytic methods, vol. 82 (5): 773–83. <a href="https://doi.org/10.1037/a0036515">https://doi.org/10.1037/a0036515</a>.
 </div>
 <div id="ref-greiferCobaltCovariateBalance2020" class="csl-entry" role="listitem">
 Greifer, Noah. 2020. <em>Cobalt: Covariate Balance Tables and Plots</em>. <a href="https://CRAN.R-project.org/package=cobalt">https://CRAN.R-project.org/package=cobalt</a>.
 </div>
 <div id="ref-hernanCausalInferenceWhat2020" class="csl-entry" role="listitem">
-Hernán, Miguel A, and James M Robins. 2020. <em>Causal Inference: What If</em>. Boca Raton: Chapman &amp; Hall/CRC. <a href="https://cdn1.sph.harvard.edu/wp-content/uploads/sites/1268/2020/01/ci_hernanrobins_21jan20.pdf">https://cdn1.sph.harvard.edu/wp-content/uploads/sites/1268/2020/01/ci_hernanrobins_21jan20.pdf</a>.
+Hernán, Miguel A, and James M Robins. 2020. <em>Causal Inference: What If</em>. Chapman &amp; Hall/CRC. <a href="https://cdn1.sph.harvard.edu/wp-content/uploads/sites/1268/2020/01/ci_hernanrobins_21jan20.pdf">https://cdn1.sph.harvard.edu/wp-content/uploads/sites/1268/2020/01/ci_hernanrobins_21jan20.pdf</a>.
 </div>
 <div id="ref-hiranoPropensityScoreContinuous2005" class="csl-entry" role="listitem">
-Hirano, Keisuke, and Guido W. Imbens. 2005. <span>“The Propensity Score with Continuous Treatments.”</span> In, edited by Andrew Gelman and Xiao-Li Meng, 73–84. Chichester, UK: John Wiley &amp; Sons, Ltd. <a href="https://doi.org/10.1002/0470090456.ch7">https://doi.org/10.1002/0470090456.ch7</a>.
+Hirano, Keisuke, and Guido W. Imbens. 2005. <em>The Propensity Score with Continuous Treatments</em>. Edited by Andrew Gelman and Xiao-Li Meng. John Wiley &amp; Sons, Ltd. <a href="https://doi.org/10.1002/0470090456.ch7">https://doi.org/10.1002/0470090456.ch7</a>.
 </div>
 <div id="ref-hulingIndependenceWeightsCausal2023a" class="csl-entry" role="listitem">
 Huling, Jared D., Noah Greifer, and Guanhua Chen. 2023. <span>“Independence Weights for Causal Inference with Continuous Treatments.”</span> <em>Journal of the American Statistical Association</em> 0 (ja): 1–25. <a href="https://doi.org/10.1080/01621459.2023.2213485">https://doi.org/10.1080/01621459.2023.2213485</a>.
@@ -387,16 +586,16 @@ Huling, Jared D., Noah Greifer, and Guanhua Chen. 2023. <span>“Independence We
 Imbens, Guido W. 2000. <span>“The Role of the Propensity Score in Estimating Dose-Response Functions.”</span> <em>Biometrika</em> 87 (3): 706–10. <a href="https://www.jstor.org/stable/2673642">https://www.jstor.org/stable/2673642</a>.
 </div>
 <div id="ref-leyratPropensityScoreAnalysis2019" class="csl-entry" role="listitem">
-Leyrat, Clémence, Shaun R Seaman, Ian R White, Ian Douglas, Liam Smeeth, Joseph Kim, Matthieu Resche-Rigon, James R Carpenter, and Elizabeth J Williamson. 2019. <span>“Propensity Score Analysis with Partially Observed Covariates: How Should Multiple Imputation Be Used?”</span> <em>Statistical Methods in Medical Research</em> 28 (1): 3–19. <a href="https://doi.org/10.1177/0962280217713032">https://doi.org/10.1177/0962280217713032</a>.
+Leyrat, Clémence, Shaun R Seaman, Ian R White, et al. 2019. <span>“Propensity Score Analysis with Partially Observed Covariates: How Should Multiple Imputation Be Used?”</span> <em>Statistical Methods in Medical Research</em> 28 (1): 3–19. <a href="https://doi.org/10.1177/0962280217713032">https://doi.org/10.1177/0962280217713032</a>.
 </div>
 <div id="ref-liPropensityScoreWeighting2019" class="csl-entry" role="listitem">
-Li, Fan, and Fan Li. 2019. <span>“Propensity Score Weighting for Causal Inference with Multiple Treatments.”</span> <em>The Annals of Applied Statistics</em> 13 (4): 2389–2415. <a href="https://doi.org/10.1214/19-AOAS1282">https://doi.org/10.1214/19-AOAS1282</a>.
+Li, Fan, and Fan Li. 2019. <span>“Propensity Score Weighting for Causal Inference with Multiple Treatments.”</span> <em>The Annals of Applied Statistics</em> 13 (4): 2389–415. <a href="https://doi.org/10.1214/19-AOAS1282">https://doi.org/10.1214/19-AOAS1282</a>.
 </div>
 <div id="ref-lopezEstimationCausalEffects2017" class="csl-entry" role="listitem">
 Lopez, Michael J., and Roee Gutman. 2017. <span>“Estimation of Causal Effects with Multiple Treatments: A Review and New Ideas.”</span> <em>Statistical Science</em> 32 (3): 432–54. <a href="https://doi.org/10.1214/17-STS612">https://doi.org/10.1214/17-STS612</a>.
 </div>
 <div id="ref-mccaffreyTutorialPropensityScore2013" class="csl-entry" role="listitem">
-McCaffrey, Daniel F., Beth Ann Griffin, Daniel Almirall, Mary Ellen Slaughter, Rajeev Ramchand, and Lane F. Burgette. 2013. <span>“A Tutorial on Propensity Score Estimation for Multiple Treatments Using Generalized Boosted Models.”</span> <em>Statistics in Medicine</em> 32 (19): 3388–3414. <a href="https://doi.org/10.1002/sim.5753">https://doi.org/10.1002/sim.5753</a>.
+McCaffrey, Daniel F., Beth Ann Griffin, Daniel Almirall, Mary Ellen Slaughter, Rajeev Ramchand, and Lane F. Burgette. 2013. <span>“A Tutorial on Propensity Score Estimation for Multiple Treatments Using Generalized Boosted Models.”</span> <em>Statistics in Medicine</em> 32 (19): 3388–414. <a href="https://doi.org/10.1002/sim.5753">https://doi.org/10.1002/sim.5753</a>.
 </div>
 <div id="ref-pishgarMatchThemMatchingWeighting2021a" class="csl-entry" role="listitem">
 Pishgar, Farhad, Noah Greifer, Clémence Leyrat, and Elizabeth Stuart. 2021. <span>“MatchThem:: Matching and Weighting After Multiple Imputation.”</span> <em>The R Journal</em> 13 (2): 292305. <a href="https://doi.org/10.32614/RJ-2021-073">https://doi.org/10.32614/RJ-2021-073</a>.
@@ -405,7 +604,7 @@ Pishgar, Farhad, Noah Greifer, Clémence Leyrat, and Elizabeth Stuart. 2021. <sp
 Robins, James M., Miguel Ángel Hernán, and Babette Brumback. 2000. <span>“Marginal Structural Models and Causal Inference in Epidemiology.”</span> <em>Epidemiology</em> 11 (5): 550–60. <a href="https://doi.org/10.1097/00001648-200009000-00011">https://doi.org/10.1097/00001648-200009000-00011</a>.
 </div>
 <div id="ref-rubinMultipleImputationNonresponse2004" class="csl-entry" role="listitem">
-Rubin, Donald B. 2004. <em>Multiple Imputation for Nonresponse in Surveys</em>. Wiley Classics Library. Hoboken, N.J: Wiley-Interscience.
+Rubin, Donald B. 2004. <em>Multiple Imputation for Nonresponse in Surveys</em>. Wiley Classics Library. Wiley-Interscience.
 </div>
 <div id="ref-strasserEstimatesSARSCoV2Omicron2022" class="csl-entry" role="listitem">
 Strasser, Zachary H., Noah Greifer, Aboozar Hadavand, Shawn N. Murphy, and Hossein Estiri. 2022. <span>“Estimates of SARS-CoV-2 Omicron BA.2 Subvariant Severity in New England.”</span> <em>JAMA Network Open</em> 5 (10): e2238354. <a href="https://doi.org/10.1001/jamanetworkopen.2022.38354">https://doi.org/10.1001/jamanetworkopen.2022.38354</a>.
@@ -426,8 +625,84 @@ Zhu, Yeying, Donna L. Coffman, and Debashis Ghosh. 2015. <span>“A Boosting Alg
 </section>
 
 </main> <!-- /main -->
+<script>
+// Light / Dark / System switch, built on Quarto's own light-dark mechanism (Quarto 1.7+ with
+// respect-user-color-scheme: true). Quarto stores an explicit choice in localStorage["quarto-color-scheme"]
+// ("default" = light, "alternate" = dark) and, when nothing is stored, follows prefers-color-scheme and
+// tracks OS changes live. "System" here therefore means: remove the stored choice and apply the OS preference.
+(function () {
+  const KEY = "quarto-color-scheme";
+  const mq = window.matchMedia("(prefers-color-scheme: dark)");
+  const stored = () => { try { return window.localStorage.getItem(KEY); } catch { return null; } };
+  const mode = () => { const s = stored(); return s === "alternate" ? "dark" : s === "default" ? "light" : "system"; };
+  const isDark = () => document.body.classList.contains("quarto-dark");
+  const apply = (dark) => {
+    if (isDark() === dark) return;
+    if (typeof window.quartoToggleColorScheme === "function") { window.quartoToggleColorScheme(); }
+  };
+  const choose = (m) => {
+    const dark = m === "dark" ? true : m === "light" ? false : mq.matches;
+    apply(dark);
+    try {
+      if (m === "system") { window.localStorage.removeItem(KEY); }
+      else { window.localStorage.setItem(KEY, dark ? "alternate" : "default"); }
+    } catch {}
+    mark();
+  };
+  const items = [["light", "Light", "bi-sun"], ["dark", "Dark", "bi-moon"], ["system", "System", "bi-circle-half"]];
+  let menu;
+  const mark = () => {
+    if (!menu) return;
+    const m = mode();
+    menu.querySelectorAll("[data-mode]").forEach((a) => {
+      const on = a.dataset.mode === m;
+      a.classList.toggle("active", on);
+      a.setAttribute("aria-current", on ? "true" : "false");
+    });
+    const icon = menu.parentElement.querySelector(".dss-switch-icon");
+    if (icon) icon.className = "bi dss-switch-icon " + items.find((i) => i[0] === m)[2];
+  };
+  const build = () => {
+    const nav = document.querySelector(".navbar .navbar-nav.ms-auto") || document.querySelector(".navbar .navbar-nav");
+    if (!nav || nav.querySelector(".dss-theme-switch")) return;
+    const li = document.createElement("li");
+    li.className = "nav-item dropdown dss-theme-switch";
+    li.innerHTML =
+      '<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Colour scheme" title="Colour scheme">' +
+      '<i class="bi dss-switch-icon bi-circle-half"></i></a>' +
+      '<ul class="dropdown-menu dropdown-menu-end">' +
+      items.map(([m, label, icon]) => '<li><a class="dropdown-item" href="#" data-mode="' + m + '"><i class="bi ' + icon + '"></i> ' + label + "</a></li>").join("") +
+      "</ul>";
+    nav.appendChild(li);
+    menu = li.querySelector(".dropdown-menu");
+    menu.addEventListener("click", (e) => {
+      const a = e.target.closest("[data-mode]");
+      if (!a) return;
+      e.preventDefault();
+      choose(a.dataset.mode);
+    });
+    mark();
+  };
+  if (document.readyState === "loading") { document.addEventListener("DOMContentLoaded", build); } else { build(); }
+  // Quarto's listener re-applies the OS preference on change when nothing is stored; keep the tick in step.
+  mq.addEventListener("change", () => setTimeout(mark, 0));
+})();
+</script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
     const icon = "";
     const anchorJS = new window.AnchorJS();
     anchorJS.options = {
@@ -477,13 +752,14 @@ Zhu, Yeying, Donna L. Coffman, and Debashis Ghosh. 2015. <span>“A Boosting Alg
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy
@@ -512,6 +788,11 @@ Zhu, Yeying, Donna L. Coffman, and Debashis Ghosh. 2015. <span>“A Boosting Alg
           if (link.dataset.originalHref !== undefined) {
             link.href = link.dataset.originalHref;
           }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
         }
       }
     function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
@@ -838,8 +1119,37 @@ Zhu, Yeying, Donna L. Coffman, and Debashis Ghosh. 2015. <span>“A Boosting Alg
   </div>
 </nav>
 </div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p><a href="https://www.iq.harvard.edu/" class="footer-logo" aria-label="IQSS, the Institute for Quantitative Social Science"></a><span>Data Science Services · Institute for Quantitative Social Science · Harvard University</span></p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/IQSS/dss-ps/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item">
+    <a class="nav-link" href="https://www.iq.harvard.edu/data-science-services">
+<p>Data Science Services</p>
+</a>
+  </li>  
+    <li class="nav-item">
+    <a class="nav-link" href="https://www.iq.harvard.edu/data-science-services/contact-us">
+<p>Request help</p>
+</a>
+  </li>  
+    <li class="nav-item">
+    <a class="nav-link" href="https://www.iq.harvard.edu/">
+<p>IQSS</p>
+</a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
 
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/IQSS/dss-ps/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
+</body></html>
