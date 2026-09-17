@@ -6,6 +6,7 @@ book:
   author: "Noah Greifer"
   date: "last-modified"
   repo-url: https://github.com/IQSS/dss-ps/
+  site-url: https://iqss.github.io/dss-ps/
   repo-actions: [issue]
   page-navigation: true
   # The theme contributes the footer's left half; the licence is this book's own.
@@ -45,6 +46,12 @@ format:
   dss-theme-html:
     code-link: true
     author-meta: "Noah Greifer"
+    include-in-header:
+      # Visitor counts: GoatCounter at dss-ps.goatcounter.com. Each page view is recorded with its path,
+      # title and referrer; no cookie, nothing that identifies the reader. Adding #toggle-goatcounter to any
+      # iqss.github.io address switches counting off in that browser, for the people who maintain the sites.
+      - text: |
+          <script data-goatcounter="https://dss-ps.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 
 execute:
   freeze: auto
